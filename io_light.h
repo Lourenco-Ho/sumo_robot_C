@@ -7,11 +7,11 @@
 
 class io_light{
   public:
-    io_light(int light_pin);
+    io_light(uint8_t light_pin);
     void flash_light(int loop_times);
   
   private:
-    int light_pin;
+    uint8_t light_pin;
 
 };
 

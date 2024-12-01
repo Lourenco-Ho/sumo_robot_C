@@ -1,25 +1,27 @@
 #include <WiFi.h>
-
-#ifndef STASSID
-#define STASSID "Joyce_Chan-2.4G" //ssid
-#define STAPSK "98048299" //password
-#endif
-
-
 #ifndef WIFI_SERVER_H
 #define WIFI_SERVER_H
 
+#include <WiFi.h>
+#include <WiFiClient.h>
+#include <WebServer.h>
+#include <LEAmDNS.h>
 
+class Wifi_server {
+public:
+    Wifi_server(const char* ssid, const char* password);
+    void begin();
+    void handleClient();
 
-class Wifi_server{
-  public:
-    Wifi_server();
-    void wifi_connect();
-  
-  private:
-    const char* ssid = STASSID;
-    const char* password = STAPSK;
-    int port;
+private:
+    const char* ssid;
+    const char* password;
+    WebServer server;
+    const int led = LED_BUILTIN;
+
+    void handleRoot();
+    void handleNotFound();
+    void set_api_to_server();
 };
 
-#endif
+#endif // WIFI_SERVER_H

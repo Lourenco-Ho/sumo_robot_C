@@ -1,35 +1,63 @@
+//-- my script
 #include "Io_light.h"
 #include "Wifi_server.h"
+#include "HUSKYLENS.h"
 
-io_light* io_light_class;
-Wifi_server* wifi_server_class;
+#include <stdio.h>
+#include "pico/stdlib.h"
+#include <Wire.h>
 
-#include <WiFi.h>
+
+
+/*#ifndef STASSID
+#define STASSID "Lourenco-pico"
+#define STAPSK "1234"
+#endif*/
+
+
 #ifndef STASSID
-#define STASSID "Joyce_Chan-2.4G"
-#define STAPSK "98048299"
+#define STASSID "Lourenco-pico"
+#define STAPSK "1234"
 #endif
 
-const char* ssid = STASSID;
-const char* password = STAPSK;
 
-int port = 80;
+io_light* io_light_class;
+Wifi_server Wifi_server(STASSID, STAPSK);
 
-WiFiServer server(port);
+HUSKYLENS huskylens;
+//HUSKYLENS green line >> SDA(4); blue line >> SCL(5)
+#define SDA_PIN 26
+#define SCL_PIN 27
+
 
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(9600);
-  //io_light_class = new io_light(LED_BUILTIN);
-  //io_light_class->flash_light(1);
 
-  wifi_server_class = new Wifi_server();
-  wifi_server_class->wifi_connect();
+  //huskylens
+  Wire.setSDA(SDA_PIN);
+  Wire.setSCL(SCL_PIN);
+  Wire.begin();
+  while (!huskylens.begin(Wire))
+  {
+      Serial.println(F("Begin failed!"));
+      Serial.println(F("1.Please recheck the \"Protocol Type\" in HUSKYLENS (General Settings>>Protocol Type>>I2C)"));
+      Serial.println(F("2.Please recheck the connection."));
+      delay(100);
+  }
 
+  huskylens.writeAlgorithm(ALGORITHM_OBJECT_TRACKING); //Switch the algorithm to object tracking.
+
+  //webserver
+  Wifi_server.begin();
+
+  //light
   io_light_class = new io_light(LED_BUILTIN);
-  io_light_class->flash_light(1);
+  io_light_class->flash_light(10);
 
 }
 
-void loop() {}
+void loop() {
+  Wifi_server.handleClient();
+}
 

@@ -1,7 +1,7 @@
 #include "io_light.h"
 
 //Constructor
-io_light::io_light(int light_pin)
+io_light::io_light(uint8_t light_pin)
   :light_pin(light_pin){
     pinMode(light_pin, OUTPUT);
   }
